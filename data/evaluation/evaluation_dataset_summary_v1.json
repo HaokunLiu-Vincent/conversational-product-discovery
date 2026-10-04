@@ -1,0 +1,69 @@
+{
+  "version": "v1",
+  "product_database_path": "/content/drive/MyDrive/UTS Courses/Industrial Project/data/processed/laptop_product_database_v2.parquet",
+  "product_database_rows": 4938,
+  "development": {
+    "dialogues": 60,
+    "turns": 155,
+    "source_counts": {
+      "controlled_synthetic": 60
+    },
+    "scenario_counts": {
+      "simple_set": 30,
+      "constraint_accumulation": 25,
+      "multi_attribute_set": 10,
+      "removal": 10,
+      "unit_conversion": 10,
+      "soft_preference": 10,
+      "cross_turn_reference": 5,
+      "numeric_normalization": 5,
+      "brand_normalization": 5,
+      "correction_overwrite": 5,
+      "gpu_normalization": 5,
+      "semantic_usage": 5,
+      "mixed_hard_soft": 5,
+      "ambiguity_clarification": 5,
+      "ambiguity_resolution": 5,
+      "contradictory_same_turn": 5,
+      "contradiction_resolution": 5,
+      "no_op": 5
+    }
+  },
+  "heldout_test": {
+    "dialogues": 130,
+    "turns": 327,
+    "manual_adversarial_dialogues": 10,
+    "source_counts": {
+      "controlled_synthetic": 120,
+      "manual_adversarial": 10
+    },
+    "scenario_counts": {
+      "simple_set": 60,
+      "constraint_accumulation": 50,
+      "multi_attribute_set": 22,
+      "removal": 21,
+      "unit_conversion": 20,
+      "soft_preference": 20,
+      "mixed_hard_soft": 12,
+      "brand_normalization": 12,
+      "ambiguity_resolution": 11,
+      "correction_overwrite": 11,
+      "cross_turn_reference": 11,
+      "contradiction_resolution": 11,
+      "contradictory_same_turn": 11,
+      "numeric_normalization": 10,
+      "gpu_normalization": 10,
+      "ambiguity_clarification": 10,
+      "semantic_usage": 10,
+      "no_op": 10,
+      "removal_and_set": 1,
+      "mixed_hard_ambiguous": 1,
+      "semantic_brand_preference": 1,
+      "cross_turn_removal": 1,
+      "contradictory_resolved_same_turn": 1
+    },
+    "zero_candidate_turns": 11
+  },
+  "dev_test_exact_utterance_overlap": 0,
+  "methodology_note": "No model training or fine-tuning is performed. The development set is used for prompt/schema/validation refinement. The held-out test set is reserved for final evaluation. Ground-truth semantic updates and states are defined before natural-language realization."
+}

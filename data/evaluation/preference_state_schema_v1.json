@@ -1,0 +1,71 @@
+{
+  "version": "v1",
+  "state_fields": [
+    "budget_max",
+    "brand",
+    "ram_min_gb",
+    "storage_min_gb",
+    "screen_size_max_in",
+    "gpu_required",
+    "weight_max_kg",
+    "usage",
+    "preference_notes"
+  ],
+  "hard_fields": [
+    "budget_max",
+    "brand",
+    "ram_min_gb",
+    "storage_min_gb",
+    "screen_size_max_in",
+    "gpu_required",
+    "weight_max_kg"
+  ],
+  "semantic_fields": [
+    "usage",
+    "preference_notes"
+  ],
+  "canonical_brands": [
+    "Acer",
+    "Apple",
+    "ASUS",
+    "Dell",
+    "Gateway",
+    "Gigabyte",
+    "HP",
+    "Huawei",
+    "Lenovo",
+    "LG",
+    "Microsoft",
+    "MSI",
+    "Panasonic",
+    "Razer",
+    "Samsung",
+    "Toshiba"
+  ],
+  "canonical_gpu_values": [
+    "Integrated",
+    "Intel Iris Xe",
+    "AMD Radeon",
+    "RTX 3050",
+    "RTX 3050 Ti",
+    "RTX 3060",
+    "RTX 4050",
+    "RTX 4060",
+    "RTX 4070"
+  ],
+  "usage_values": [
+    "business",
+    "study",
+    "gaming",
+    "all_round"
+  ],
+  "notes": {
+    "budget_max": "Maximum acceptable product price.",
+    "ram_min_gb": "Minimum acceptable RAM in GB.",
+    "storage_min_gb": "Minimum acceptable storage in GB.",
+    "screen_size_max_in": "Maximum acceptable screen size in inches.",
+    "weight_max_kg": "Maximum acceptable weight in kilograms.",
+    "usage": "Contextual intent only; not a deterministic hard filter.",
+    "preference_notes": "Free-text semantic preferences; not a deterministic hard filter."
+  }
+}
