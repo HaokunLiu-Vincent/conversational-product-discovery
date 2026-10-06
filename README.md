@@ -6,21 +6,21 @@ code owns session state, constraint validation, catalogue filtering, and candida
 
 ## Setup
 
+Runtime catalogue Parquet files are intentionally not stored in Git. Provision a local copy,
+then configure its path explicitly:
+
 ```bash
 conda env create -f environment.yml
 conda activate product-discovery
 cp .env.example .env
-```
-
-Set `PRODUCT_DISCOVERY_OPENAI_API_KEY` in `.env`, then start the API:
-
-```bash
+export PRODUCT_DISCOVERY_CATALOGUE_PATH="$PWD/data/processed/laptop_product_database_v3.parquet"
+unset PRODUCT_DISCOVERY_CATALOGUE_URI
 uvicorn product_discovery.api:app --reload
 ```
 
-The default catalogue is `data/processed/laptop_product_database_v3.parquet`. Its exclusion
-audit is recorded in `data/processed/laptop_product_database_v3_exclusions.csv`; v2 remains
-the unchanged source catalogue.
+Set `PRODUCT_DISCOVERY_OPENAI_API_KEY` in `.env` before starting the API. The conventional
+local path is `data/processed/laptop_product_database_v3.parquet`, but any readable local
+path can be supplied with `PRODUCT_DISCOVERY_CATALOGUE_PATH`.
 
 For deployment, `PRODUCT_DISCOVERY_CATALOGUE_URI` may point to an S3 object such as
 `s3://catalogue-bucket/catalogues/laptop_product_database_v3.parquet`. When set, it takes
@@ -52,19 +52,30 @@ Build the production image from the repository root:
 docker build -t product-discovery:local .
 ```
 
-Run it with individual environment variables:
+The image contains application code only. To use a local catalogue, bind-mount it read-only
+and set the in-container path:
 
 ```bash
 docker run --rm -p 8000:8000 \
-  -e PRODUCT_DISCOVERY_OPENAI_API_KEY="$PRODUCT_DISCOVERY_OPENAI_API_KEY" \
-  -e PRODUCT_DISCOVERY_OPENAI_MODEL="${PRODUCT_DISCOVERY_OPENAI_MODEL:-gpt-6-astra}" \
+  --env-file .env \
+  --mount type=bind,source="$PWD/data/processed/laptop_product_database_v3.parquet",target=/catalogue/catalogue.parquet,readonly \
+  -e PRODUCT_DISCOVERY_CATALOGUE_PATH=/catalogue/catalogue.parquet \
+  -e PRODUCT_DISCOVERY_CATALOGUE_URI= \
   product-discovery:local
 ```
 
-Alternatively, load all `PRODUCT_DISCOVERY_*` settings from the local `.env` file:
+Alternatively, use S3. The following example mounts an existing AWS profile read-only; any
+AWS SDK credential-provider-chain source may be used instead:
 
 ```bash
-docker run --rm -p 8000:8000 --env-file .env product-discovery:local
+docker run --rm -p 8000:8000 \
+  --env-file .env \
+  --mount type=bind,source="$HOME/.aws",target=/aws,readonly \
+  -e AWS_CONFIG_FILE=/aws/config \
+  -e AWS_SHARED_CREDENTIALS_FILE=/aws/credentials \
+  -e AWS_PROFILE="${AWS_PROFILE:-default}" \
+  -e PRODUCT_DISCOVERY_CATALOGUE_URI=s3://catalogue-bucket/catalogues/laptop_product_database_v3.parquet \
+  product-discovery:local
 ```
 
 The `.env` file is excluded from the build context and is never stored in the image. The
@@ -79,6 +90,11 @@ curl -X POST http://127.0.0.1:8000/v1/chat \
   -d '{"session_id":"docker-demo","message":"I need 16GB RAM under $1500"}'
 ```
 
+For future AWS execution, set `PRODUCT_DISCOVERY_CATALOGUE_URI` and grant the workload IAM
+role `s3:GetObject` access to that object. Do not bake credentials into the image or task
+definition. The service downloads the object once at repository initialization and logs its
+source, validated row count, and SHA-256 checksum as deployment evidence.
+
 ## Development
 
 ```bash
@@ -90,6 +106,17 @@ ruff format --check src tests
 Unit tests cover deterministic components. Integration tests exercise API wiring without
 calling external services. Development evaluation data may be used for debugging, but do
 not inspect or tune against held-out dialogues outside an explicitly requested formal run.
+
+## Continuous integration
+
+GitHub Actions runs on pushes to `main` and pull requests targeting `main`. The Python 3.12
+job installs `.[dev]`, runs Ruff lint and formatting checks, and executes the complete
+non-live test suite. It does not use OpenAI or AWS credentials, contact S3, or require a
+runtime catalogue. The optional live OpenAI test is explicitly excluded.
+
+After the Python job succeeds, a separate job verifies that no Parquet catalogue is present
+and builds the production Docker image without pushing it. Pip and Docker layer caches are
+enabled to reduce repeat build time.
 
 ## Package layout
 

@@ -29,9 +29,6 @@ RUN python -m pip install --no-cache-dir --no-index \
         --find-links=/wheels conversational-product-discovery \
     && rm -rf /wheels
 
-COPY --chown=app:app data/processed/laptop_product_database_v3.parquet \
-    data/processed/laptop_product_database_v3.parquet
-
 USER app
 
 EXPOSE 8000

@@ -54,6 +54,10 @@ These fields do not perform deterministic catalogue filtering.
 Use:
 data/processed/laptop_product_database_v3.parquet
 
+Runtime Parquet catalogues are provisioned externally and are not stored in Git. Set
+PRODUCT_DISCOVERY_CATALOGUE_PATH for local development or PRODUCT_DISCOVERY_CATALOGUE_URI
+for S3-backed runtime loading.
+
 Treat v2 as the immutable source catalogue. The v3 exclusion audit is stored at
 data/processed/laptop_product_database_v3_exclusions.csv.
 

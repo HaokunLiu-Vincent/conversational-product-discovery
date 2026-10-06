@@ -1,4 +1,5 @@
 .git
+.github/
 .gitignore
 .env
 .env.*
@@ -17,7 +18,7 @@ notebooks/
 tests/
 evaluation/
 data/evaluation/
-data/processed/*
-!data/processed/laptop_product_database_v3.parquet
+data/processed/
+**/*.parquet
 AGENTS.md
 environment.yml
