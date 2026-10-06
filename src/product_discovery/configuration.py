@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     openai_api_key: SecretStr | None = None
     openai_model: str = "gpt-6-astra"
     catalogue_path: Path = Path("data/processed/laptop_product_database_v3.parquet")
+    catalogue_uri: str | None = None
     max_candidates: int = Field(default=5, ge=1, le=20)
 
 

@@ -9,6 +9,10 @@ from product_discovery.configuration import Settings
 def test_settings_load_product_discovery_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("PRODUCT_DISCOVERY_OPENAI_API_KEY", "test-key")
     monkeypatch.setenv("PRODUCT_DISCOVERY_CATALOGUE_PATH", "/tmp/catalogue.parquet")
+    monkeypatch.setenv(
+        "PRODUCT_DISCOVERY_CATALOGUE_URI",
+        "s3://catalogue-bucket/laptop_product_database_v3.parquet",
+    )
     monkeypatch.setenv("PRODUCT_DISCOVERY_MAX_CANDIDATES", "7")
 
     settings = Settings(_env_file=None)
@@ -16,6 +20,7 @@ def test_settings_load_product_discovery_environment(monkeypatch: pytest.MonkeyP
     assert settings.openai_api_key is not None
     assert settings.openai_api_key.get_secret_value() == "test-key"
     assert settings.catalogue_path == Path("/tmp/catalogue.parquet")
+    assert settings.catalogue_uri == "s3://catalogue-bucket/laptop_product_database_v3.parquet"
     assert settings.max_candidates == 7
 
 

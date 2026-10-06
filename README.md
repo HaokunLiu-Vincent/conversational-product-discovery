@@ -22,6 +22,13 @@ The default catalogue is `data/processed/laptop_product_database_v3.parquet`. It
 audit is recorded in `data/processed/laptop_product_database_v3_exclusions.csv`; v2 remains
 the unchanged source catalogue.
 
+For deployment, `PRODUCT_DISCOVERY_CATALOGUE_URI` may point to an S3 object such as
+`s3://catalogue-bucket/catalogues/laptop_product_database_v3.parquet`. When set, it takes
+precedence over `PRODUCT_DISCOVERY_CATALOGUE_PATH`: the object is downloaded once to a
+temporary local file and then processed by the same Parquet repository. Authentication uses
+the standard AWS SDK credential provider chain, including IAM roles; do not put AWS
+credentials in `.env`. Leave the URI unset to retain the local-file workflow.
+
 ## API
 
 `GET /health` reports process health. `POST /v1/chat` accepts a session ID and the latest

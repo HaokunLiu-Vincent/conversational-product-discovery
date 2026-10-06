@@ -10,10 +10,10 @@ from product_discovery.configuration import get_settings
 from product_discovery.llm.adapter import LLMAdapterError
 from product_discovery.llm.openai_adapter import OpenAIAdapter
 from product_discovery.preferences.manager import PreferenceStateManager
-from product_discovery.products.repository import ParquetProductRepository
 from product_discovery.products.retrieval import RetrievalEngine
 from product_discovery.products.search import ProductSearchService
 from product_discovery.products.selection import RepresentativeProductSelector
+from product_discovery.products.source import ConfiguredProductRepository
 from product_discovery.responses.generator import GroundedResponseGenerator
 from product_discovery.schemas import ChatRequest, ChatResponse
 from product_discovery.services.chat import ChatService
@@ -31,8 +31,10 @@ def build_chat_service() -> ChatService:
         api_key=settings.openai_api_key.get_secret_value(),
         model=settings.openai_model,
     )
-    repository = ParquetProductRepository(settings.catalogue_path)
-    repository.list_products()
+    repository = ConfiguredProductRepository(
+        catalogue_path=settings.catalogue_path,
+        catalogue_uri=settings.catalogue_uri,
+    )
     product_search = ProductSearchService(
         retrieval=RetrievalEngine(repository),
         selector=RepresentativeProductSelector(),
