@@ -77,6 +77,13 @@ jobs:
       - name: Verify runtime catalogues are absent
         run: test -z "$(find . -path './.git' -prune -o -name '*.parquet' -print -quit)"
 
+      - name: Show GitHub repository identity
+        run: |
+          echo "repository=${{ github.repository }}"
+          echo "repository_owner_id=${{ github.repository_owner_id }}"
+          echo "repository_id=${{ github.repository_id }}"
+          echo "ref=${{ github.ref }}"
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
