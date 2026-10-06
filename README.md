@@ -118,6 +118,14 @@ After the Python job succeeds, a separate job verifies that no Parquet catalogue
 and builds the production Docker image without pushing it. Pip and Docker layer caches are
 enabled to reduce repeat build time.
 
+On pushes to `main` only, a third job runs after the Docker build and publishes the image to
+private Amazon ECR. Configure the repository variables `AWS_ROLE_ARN`, `AWS_REGION`, and
+`ECR_REPOSITORY`. GitHub assumes the role through OIDC, so no long-lived AWS access keys are
+stored in GitHub. The image is tagged `sha-<full-git-sha>-r<run-attempt>`; no `latest` tag is
+written, which is compatible with immutable ECR repositories. The published URI and digest
+are added to the workflow summary. This stage publishes only—it does not access S3 or deploy
+to ECS.
+
 ## Package layout
 
 - `llm/`: provider interface and OpenAI Responses API adapter.
