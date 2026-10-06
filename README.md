@@ -37,6 +37,41 @@ Session preference state is process-local and intentionally ephemeral. The confi
 candidate maximum limits only representative products in the response; the qualified count
 always reflects the complete deterministically filtered catalogue.
 
+## Docker
+
+Build the production image from the repository root:
+
+```bash
+docker build -t product-discovery:local .
+```
+
+Run it with individual environment variables:
+
+```bash
+docker run --rm -p 8000:8000 \
+  -e PRODUCT_DISCOVERY_OPENAI_API_KEY="$PRODUCT_DISCOVERY_OPENAI_API_KEY" \
+  -e PRODUCT_DISCOVERY_OPENAI_MODEL="${PRODUCT_DISCOVERY_OPENAI_MODEL:-gpt-6-astra}" \
+  product-discovery:local
+```
+
+Alternatively, load all `PRODUCT_DISCOVERY_*` settings from the local `.env` file:
+
+```bash
+docker run --rm -p 8000:8000 --env-file .env product-discovery:local
+```
+
+The `.env` file is excluded from the build context and is never stored in the image. The
+container runs one Uvicorn worker so session state remains process-local for this version.
+Once it starts, verify health and send a chat request:
+
+```bash
+curl http://127.0.0.1:8000/health
+
+curl -X POST http://127.0.0.1:8000/v1/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id":"docker-demo","message":"I need 16GB RAM under $1500"}'
+```
+
 ## Development
 
 ```bash
