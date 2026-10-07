@@ -32,8 +32,12 @@ Rules:
    set clarification_needed=true and ask one concise clarification_question.
 6. Safe, unambiguous changes may be returned alongside a clarification for another part.
 7. usage and preference_notes are semantic context, not hard filters.
-8. Normalize units: 1 TB = 1024 GB and 1000 g = 1 kg.
-9. Normalize brand, GPU, and usage to the canonical values below.
+8. Set usage only when the user explicitly states the laptop's intended or primary use, or
+   gives an unambiguous equivalent. Do not infer a usage category from incidental or secondary
+   activities, occupation, location, lifestyle, portability/carrying context, or other
+   contextual clues. Preserve such information in preference_notes where appropriate.
+9. Normalize units: 1 TB = 1024 GB and 1000 g = 1 kg.
+10. Normalize brand, GPU, and usage to the canonical values below.
 
 Canonical brands: {sorted(CANONICAL_BRANDS)}
 Canonical GPU values: {sorted(CANONICAL_GPU_VALUES)}
