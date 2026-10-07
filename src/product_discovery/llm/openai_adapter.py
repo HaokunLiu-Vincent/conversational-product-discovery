@@ -1,6 +1,7 @@
 """OpenAI implementation of the provider-neutral LLM boundary."""
 
 import json
+import logging
 from collections.abc import Sequence
 from typing import Any
 
@@ -15,6 +16,8 @@ from product_discovery.schemas import (
     PreferenceUpdate,
     Product,
 )
+
+logger = logging.getLogger(__name__)
 
 _UPDATE_INSTRUCTIONS = f"""
 You extract only the preference changes expressed in the user's latest message for a laptop
@@ -87,6 +90,7 @@ class OpenAIAdapter(LLMAdapter):
                 text_format=PreferenceUpdate,
             )
         except OpenAIError as exc:
+            logger.exception("OpenAI preference extraction failed")
             raise LLMAdapterError("OpenAI preference extraction failed") from exc
 
         update = response.output_parsed

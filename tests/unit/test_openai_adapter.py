@@ -1,6 +1,11 @@
 import json
+import logging
 from types import SimpleNamespace
 
+import pytest
+from openai import OpenAIError
+
+from product_discovery.llm.adapter import LLMAdapterError
 from product_discovery.llm.openai_adapter import OpenAIAdapter
 from product_discovery.schemas import PreferenceState, PreferenceUpdate, Product
 
@@ -28,6 +33,17 @@ class StubClient:
         self.responses = StubResponses()
 
 
+class FailingExtractionResponses(StubResponses):
+    def parse(self, **kwargs: object) -> SimpleNamespace:
+        del kwargs
+        raise OpenAIError("provider unavailable")
+
+
+class FailingExtractionClient:
+    def __init__(self) -> None:
+        self.responses = FailingExtractionResponses()
+
+
 def test_uses_structured_output_for_turn_update_only() -> None:
     client = StubClient()
     adapter = OpenAIAdapter(api_key="unused", model="test-model", client=client)
@@ -43,6 +59,26 @@ def test_uses_structured_output_for_turn_update_only() -> None:
         "current_validated_state": current.model_dump(mode="json"),
         "latest_user_message": "Make the RAM 16 GB",
     }
+
+
+def test_logs_underlying_preference_extraction_exception(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    adapter = OpenAIAdapter(
+        api_key="must-not-be-logged",
+        model="test-model",
+        client=FailingExtractionClient(),
+    )
+
+    with (
+        caplog.at_level(logging.ERROR, logger="product_discovery.llm.openai_adapter"),
+        pytest.raises(LLMAdapterError, match="OpenAI preference extraction failed"),
+    ):
+        adapter.extract_preference_update("Find me a laptop", PreferenceState())
+
+    assert "OpenAI preference extraction failed" in caplog.text
+    assert "provider unavailable" in caplog.text
+    assert "must-not-be-logged" not in caplog.text
 
 
 def test_grounded_response_receives_only_validated_grounding_data() -> None:
