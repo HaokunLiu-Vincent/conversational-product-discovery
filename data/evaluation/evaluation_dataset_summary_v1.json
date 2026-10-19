@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "product_database_path": "/content/drive/MyDrive/UTS Courses/Industrial Project/data/processed/laptop_product_database_v2.parquet",
+  "product_database_path": "data/processed/laptop_product_database_v2.parquet",
   "product_database_rows": 4938,
   "development": {
     "dialogues": 60,

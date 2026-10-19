@@ -3,8 +3,12 @@
 
 # Environment / secrets
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
 
 # Virtual environments
 .venv/
